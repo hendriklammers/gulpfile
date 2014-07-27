@@ -18,7 +18,7 @@ gulp.task('browser-sync', function() {
 });
 
 gulp.task('scripts', function() {
-    gulp.src('app/scripts/**/*.js')
+    return gulp.src('app/scripts/**/*.js')
         .pipe(jshint())
         .pipe(jshint.reporter(stylish))
         .pipe(concat('bundle.js'))
@@ -26,22 +26,27 @@ gulp.task('scripts', function() {
 });
 
 gulp.task('html', function() {
-    gulp.src('app/index.html')
+    return gulp.src('app/index.html')
         .pipe(gulp.dest('./build'))
         .pipe(browserSync.reload({stream: true}));
 });
 
 gulp.task('styles', function() {
-    gulp.src('app/sass/styles.scss')
+    return gulp.src('app/sass/styles.scss')
         .pipe(sass({sourcemap: true, sourcemapPath: './app/sass', style: 'compact'}))
         .pipe(prefix('last 2 versions', '> 1%', 'ie 9', 'ie 8'))
         .pipe(gulp.dest('build/css'))
         .pipe(browserSync.reload({stream: true}));
 });
 
+gulp.task('images', function() {
+    
+});
+
 gulp.task('default', ['styles', 'html', 'scripts']);
 
 gulp.task('watch', ['styles', 'html', 'scripts', 'browser-sync'], function () {
-    gulp.watch('app/sass/*.scss', ['styles']);
+    gulp.watch('app/sass/**/*.scss', ['styles']);
     gulp.watch('app/index.html', ['html']);
+    gulp.watch('app/scripts/**/*.js');
 });
