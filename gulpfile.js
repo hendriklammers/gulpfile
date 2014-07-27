@@ -6,12 +6,13 @@ var gulp = require('gulp'),
     browserSync = require('browser-sync'),
     jshint = require('gulp-jshint'),
     stylish = require('jshint-stylish'),
-    concat = require('gulp-concat');
+    concat = require('gulp-concat'),
+    filter = require('gulp-filter');
 
 gulp.task('browser-sync', function() {
     browserSync.init({
         server: {
-            baseDir: './build'
+            baseDir: ['build', 'app']
         },
         notify: true
     });
@@ -22,7 +23,8 @@ gulp.task('scripts', function() {
         .pipe(jshint())
         .pipe(jshint.reporter(stylish))
         .pipe(concat('bundle.js'))
-        .pipe(gulp.dest('./build/js'));
+        .pipe(gulp.dest('./build/js'))
+        .pipe(browserSync.reload({stream: true}));
 });
 
 gulp.task('html', function() {
@@ -33,20 +35,17 @@ gulp.task('html', function() {
 
 gulp.task('styles', function() {
     return gulp.src('app/sass/styles.scss')
-        .pipe(sass({sourcemap: true, sourcemapPath: './app/sass', style: 'compact'}))
+        .pipe(sass({style: 'compact', sourcemap: true, sourcemapPath: '../sass'}))
         .pipe(prefix('last 2 versions', '> 1%', 'ie 9', 'ie 8'))
         .pipe(gulp.dest('build/css'))
+        .pipe(filter('**/*.css'))   // Filter stream to only css files
         .pipe(browserSync.reload({stream: true}));
 });
 
-gulp.task('images', function() {
-    
-});
-
-gulp.task('default', ['styles', 'html', 'scripts']);
+gulp.task('default', ['clean', 'styles', 'html', 'scripts']);
 
 gulp.task('watch', ['styles', 'html', 'scripts', 'browser-sync'], function () {
-    gulp.watch('app/sass/**/*.scss', ['styles']);
+    gulp.watch('app/sass/*.scss', ['styles']);
     gulp.watch('app/index.html', ['html']);
-    gulp.watch('app/scripts/**/*.js');
+    gulp.watch('app/scripts/**/*.js', ['scripts']);
 });
