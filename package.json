@@ -8,7 +8,6 @@
     "gulp": "^3.8.6",
     "gulp-autoprefixer": "0.0.8",
     "gulp-concat": "^2.3.4",
-    "gulp-filter": "^1.0.0",
     "gulp-jshint": "^1.8.0",
     "gulp-ruby-sass": "^0.6.0",
     "jshint-stylish": "^0.4.0"
