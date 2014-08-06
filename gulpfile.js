@@ -12,7 +12,7 @@ gulp.task('browser-sync', function() {
     browserSync.init({
         files: [
             'index.html',
-            'assets/*'
+            'assets/**/*'
         ],
         server: {
             baseDir: ['./']
@@ -35,7 +35,7 @@ gulp.task('scripts', ['jshint'], function() {
 
 gulp.task('styles', function() {
     return gulp.src('sass/**/*.scss')
-        .pipe(sass({style: 'compact', sourcemap: true, sourcemapPath: '../sass'}))
+        .pipe(sass({style: 'compact', sourcemap: true, sourcemapPath: '../../sass'}))
         .pipe(prefix('last 2 versions', '> 1%', 'ie 9', 'ie 8'))
         .pipe(gulp.dest('assets/css'));
 });
