@@ -1,18 +1,15 @@
 'use strict';
 
 var gulp = require('gulp'),
-    sass = require('gulp-ruby-sass'),
-    prefix = require('gulp-autoprefixer'),
+    plugins = require('gulp-load-plugins')(),
     browserSync = require('browser-sync'),
-    jshint = require('gulp-jshint'),
-    stylish = require('jshint-stylish'),
-    concat = require('gulp-concat');
+    stylish = require('jshint-stylish');
 
 gulp.task('browser-sync', function() {
     browserSync.init({
         files: [
             'index.html',
-            'assets/**/*'
+            'js/**/*.js'
         ],
         server: {
             baseDir: ['./']
@@ -23,26 +20,31 @@ gulp.task('browser-sync', function() {
 
 gulp.task('jshint', function() {
     return gulp.src('src/app.js')
-        .pipe(jshint())
-        .pipe(jshint.reporter(stylish));
+        .pipe(plugins.jshint())
+        .pipe(plugins.jshint.reporter(stylish));
 });
 
 gulp.task('scripts', ['jshint'], function() {
     return gulp.src(['src/app.js'])
-        .pipe(concat('bundle.js'))
-        .pipe(gulp.dest('assets/js'));
+        .pipe(plugins.concat('bundle.js'));
+        // .pipe(gulp.dest('dist/js'));
 });
 
-gulp.task('styles', function() {
-    return gulp.src('sass/**/*.scss')
-        .pipe(sass({style: 'compact', sourcemap: true, sourcemapPath: '../../sass'}))
-        .pipe(prefix('last 2 versions', '> 1%', 'ie 9', 'ie 8'))
-        .pipe(gulp.dest('assets/css'));
+gulp.task('sass', function() {
+    return plugins.rubySass('sass', {sourcemap: true, style: 'expanded'})
+        .on('error', function(err) {
+            console.error('Error', err.message);
+        })
+
+        .pipe(plugins.autoprefixer('last 2 versions', '> 1%', 'ie 9'))
+        .pipe(plugins.sourcemaps.write())
+
+        .pipe(gulp.dest('css'));
 });
 
 gulp.task('default', ['styles', 'scripts']);
 
-gulp.task('watch', ['styles', 'scripts', 'browser-sync'], function () {
-    gulp.watch('sass/*.scss', ['styles']);
+gulp.task('watch', ['sass', 'scripts', 'browser-sync'], function () {
+    gulp.watch('sass/**/*.scss', ['sass']);
     gulp.watch('src/**/*.js', ['scripts']);
 });
