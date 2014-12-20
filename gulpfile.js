@@ -3,13 +3,18 @@
 var gulp = require('gulp'),
     plugins = require('gulp-load-plugins')(),
     browserSync = require('browser-sync'),
-    stylish = require('jshint-stylish');
+
+    path = {
+        html: '*.html',
+        scripts: 'src/**/*.js',
+        styles: 'sass/**/*.scss'
+    };
 
 gulp.task('browser-sync', function() {
     browserSync.init({
         files: [
-            'index.html',
-            'js/**/*.js'
+            path.html,
+            'dist/**/*.js'
         ],
         server: {
             baseDir: ['./']
@@ -19,15 +24,15 @@ gulp.task('browser-sync', function() {
 });
 
 gulp.task('jshint', function() {
-    return gulp.src('src/app.js')
+    return gulp.src('src/**/*.js')
         .pipe(plugins.jshint())
-        .pipe(plugins.jshint.reporter(stylish));
+        .pipe(plugins.jshint.reporter('jshint-stylish'));
 });
 
 gulp.task('scripts', ['jshint'], function() {
     return gulp.src(['src/app.js'])
-        .pipe(plugins.concat('bundle.js'));
-        // .pipe(gulp.dest('dist/js'));
+        .pipe(plugins.concat('bundle.js'))
+        .pipe(gulp.dest('dist'));
 });
 
 gulp.task('sass', function() {
