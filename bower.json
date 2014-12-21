@@ -1,0 +1,17 @@
+{
+  "name": "gulpfile",
+  "main": "gulpfile.js",
+  "version": "0.0.0",
+  "homepage": "https://github.com/hendriklammers/gulpfile",
+  "authors": [
+    "Hendrik Lammers <lammers@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
