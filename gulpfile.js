@@ -14,7 +14,8 @@ gulp.task('browser-sync', function() {
     browserSync.init({
         files: [
             path.html,
-            'dist/**/*.js'
+            'css/*.css',
+            'dist/*.js'
         ],
         server: {
             baseDir: ['./']
@@ -24,32 +25,41 @@ gulp.task('browser-sync', function() {
 });
 
 gulp.task('jshint', function() {
-    return gulp.src('src/**/*.js')
+    return gulp.src(path.scripts)
         .pipe(plugins.jshint())
         .pipe(plugins.jshint.reporter('jshint-stylish'));
 });
 
-gulp.task('scripts', ['jshint'], function() {
-    return gulp.src(['src/app.js'])
-        .pipe(plugins.concat('bundle.js'))
+gulp.task('uglify', function() {
+    return gulp.src(path.scripts)
+        .pipe(plugins.sourcemaps.init())
+        .pipe(plugins.concat('app.js'))
+        .pipe(gulp.dest('dist'))
+        .pipe(plugins.uglify())
+        .pipe(plugins.rename({suffix: '.min'}))
+        .pipe(plugins.sourcemaps.write('./'))
         .pipe(gulp.dest('dist'));
 });
 
 gulp.task('sass', function() {
     return plugins.rubySass('sass', {sourcemap: true, style: 'expanded'})
-        .on('error', function(err) {
-            console.error('Error', err.message);
-        })
-
+        .on('error', handleError)
         .pipe(plugins.autoprefixer('last 2 versions', '> 1%', 'ie 9'))
         .pipe(plugins.sourcemaps.write())
-
         .pipe(gulp.dest('css'));
 });
 
-gulp.task('default', ['styles', 'scripts']);
+gulp.task('default', ['sass', 'jshint', 'uglify']);
 
-gulp.task('watch', ['sass', 'scripts', 'browser-sync'], function () {
-    gulp.watch('sass/**/*.scss', ['sass']);
-    gulp.watch('src/**/*.js', ['scripts']);
+gulp.task('watch', ['browser-sync'], function () {
+    gulp.watch(path.styles, ['sass']);
+    gulp.watch(path.scripts, ['jshint', 'uglify']);
 });
+
+/**
+ * Displays error message in the console
+ * @param error
+ */
+function handleError(error) {
+    plugins.util.log(plugins.util.colors.red(error));
+}
